@@ -4,6 +4,8 @@ export default class View {
   _data;
   //renders data from the model
   render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
     this._data = data;
     const markup = this._generateMarkup();
     //clear the html

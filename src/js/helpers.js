@@ -24,6 +24,7 @@ export async function callApiAsync(url = '', method = 'GET', body = null) {
     const response = await Promise.race([fetchPromise, timeout(TIMEOUT_SEC)]);
     return response;
   } catch (err) {
+    console.error('Credenetials expired');
     throw err;
   }
 }

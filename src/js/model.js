@@ -1,10 +1,12 @@
 //contains the playlist for the controller to take
 import { callApiAsync } from './helpers';
+import { RES_PER_PAGE } from './config.js';
 export const state = {
   playlist: {},
   search: {
     query: '',
     results: [],
+    resultsPerPage: RES_PER_PAGE,
   },
 };
 //
@@ -116,4 +118,11 @@ export async function loadSearchResults(query) {
     console.error(err);
     throw err;
   }
+}
+
+export function getSearchResultsPage(page) {
+  const start = (page - 1) * RES_PER_PAGE;
+  const end = page * 10;
+
+  return state.search.results.slice(0, 9);
 }
