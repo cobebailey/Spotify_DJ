@@ -23,13 +23,14 @@ class PlaylistView extends View {
 
   //generates an html script using data form the model to display playlist
   _generateMarkup() {
+    console.log(this._data);
     return ` 
     <figure class="recipe__fig">
-      <img src="${this._data.image.url}" alt="${
+      <img src="${this._data.playlist.image.url}" alt="${
       this._data.name
     }" class="recipe__img" />
       <h1 class="recipe__title">
-        <span>${this._data.name}</span>
+        <span>${this._data.playlist.name}</span>
       </h1>
     </figure>
 
@@ -39,7 +40,7 @@ class PlaylistView extends View {
           <use href=${icons}#icon-clock"></use>
         </svg>
         <span class="recipe__info-data recipe__info-data--minutes">${
-          this._data.description
+          this._data.playlist.description
         }</span>
         <span class="recipe__info-text"></span>
       </div>
@@ -85,7 +86,7 @@ class PlaylistView extends View {
       <h2 class="heading--2">Tracks</h2>
       <ul class="recipe__ingredient-list">
       <!-- iterates over a playlist to display tracks -->
-      ${this._data.tracks.items
+      ${this._data.trackPage
         .map(track => {
           return `<li class="preview">
           <a class="preview__link preview__link--active" href="#t${track.track.id}">
@@ -109,20 +110,23 @@ class PlaylistView extends View {
         })
         .join(' ')}
       </div>
-        
+      
+      
 
+      
+        
+    <!--
     <div class="recipe__directions">
-      <h2 class="heading--2">How to cook it</h2>
+      <h2 class="heading--2">ph</h2>
       <p class="recipe__directions-text">
         Playlist by:
         <span class="recipe__publisher">${
-          this._data.owner.displayName
-        }</span>. Please check out
-        directions at their website.
+          this._data.playlist.owner.displayName
+        }</span>. PH
       </p>
       <a
         class="btn--small recipe__btn"
-        href="${this._data.href}"
+        href="${this._data.playlist.href}"
         target="_blank"
       >
         <span>Directions</span>

@@ -7,6 +7,7 @@ import * as model from './model.js';
 import playlistView from './views/playlistView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
+import PaginationView from './views/paginationView.js';
 import {
   requestAuthorization,
   getCode,
@@ -26,10 +27,12 @@ import {
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { callApiAsync } from './helpers.js';
+import paginationView from './views/paginationView.js';
+import trackPaginationView from './views/trackPaginationView.js';
 
-if (module.hot) {
+/* if (module.hot) {
   module.hot.accept();
-}
+} */
 //
 const authBtn = document.querySelector('.nav__btn--authBtn');
 const request = require('request'); // "Request" library
@@ -45,9 +48,12 @@ async function init() {
   playlistView.addHandlerRender(controlPlaylists);
 
   searchView.addHandlerSearch(controlSearchResults);
+  paginationView.addHandlerClick(controlPagination);
+  trackPaginationView.addHandlerClick(controlTrackPagination);
   //sets the default playlist
-  window.location.href =
-    'http://localhost:1234/index.html#p7Al4qMA6wk3G6AcFT1QsvK';
+  //this is causing aN ERROR WITH AUTH TOKENS
+  //window.location.href =
+  //'http://localhost:1234/index.html#p7Al4qMA6wk3G6AcFT1QsvK';
 }
 init();
 
@@ -55,8 +61,6 @@ init();
 authBtn.addEventListener('click', function (e) {
   e.preventDefault();
   requestAuthorization();
-  let code = getCode();
-  console.log(code);
 });
 //
 //handles page load
@@ -91,11 +95,15 @@ async function controlPlaylists() {
     //
     let playlistID;
     //if p, render playlist, if t, play track
+    //
     //all playlist item hrefs start with p
     if (itemID[0] === 'p') {
       playlistID = itemID.slice(1);
       //makes the call from the model for a playlist by ID, and passes the state here to the controller
       await model.loadPlaylist(playlistID);
+      //playlistView.render(model.state.playlist);
+      playlistView.render(model.getPlaylistTracksPage());
+      trackPaginationView.render(model.state.playlist);
     }
 
     //all track items hrefs start wth t
@@ -106,11 +114,14 @@ async function controlPlaylists() {
     }
 
     //render the playlist
-    playlistView.render(model.state.playlist);
   } catch (err) {
     console.error(err);
     playlistView.renderError(`${err} oh no!`);
   }
+}
+async function controlTrackPagination(goToPage) {
+  playlistView.render(model.getPlaylistTracksPage(goToPage));
+  trackPaginationView.render(model.state.playlist);
 }
 //
 async function controlSearchResults() {
@@ -122,10 +133,19 @@ async function controlSearchResults() {
     //make call for search results
     await model.loadSearchResults(query);
     //render them
-    resultsView.render(model.getSearchResultsPage(1));
+    resultsView.render(model.getSearchResultsPage());
+    //render initial paginaTION
+    paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
+}
+
+async function controlPagination(goToPage) {
+  //rend new res
+  resultsView.render(model.getSearchResultsPage(goToPage));
+  //render new pag
+  paginationView.render(model.state.search);
 }
 
 //controlPlaylists();

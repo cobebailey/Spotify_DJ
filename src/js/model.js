@@ -1,11 +1,18 @@
 //contains the playlist for the controller to take
 import { callApiAsync } from './helpers';
-import { RES_PER_PAGE } from './config.js';
+import { RES_PER_PAGE, TRACKS_PER_PAGE } from './config.js';
 export const state = {
-  playlist: {},
+  playlist: {
+    playlist: {},
+    tracks: [],
+    trackPage: [],
+    page: 1,
+    tracksPerPage: TRACKS_PER_PAGE,
+  },
   search: {
     query: '',
     results: [],
+    page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
 };
@@ -52,10 +59,11 @@ export async function loadPlaylist(playlistID) {
     const res = await getPlaylistById(playlistID);
 
     const playlist = await res.json();
+    console.log(playlist, 'this is the playlist');
 
     if (!res.ok) throw new Error(`${playlist.message}: ${res.status}`);
 
-    state.playlist = {
+    state.playlist.playlist = {
       description: playlist.description,
       id: playlist.id,
       href: playlist.href,
@@ -83,7 +91,7 @@ export async function loadPlaylist(playlistID) {
 //SEARCH FUNCTIONS
 export async function searchMusic(query) {
   return callApiAsync(
-    `https://api.spotify.com/v1/search?q=${query}&type=playlist`
+    `https://api.spotify.com/v1/search?q=${query}&type=playlist&limit=45`
   );
 
   //const data = response.json();
@@ -119,10 +127,23 @@ export async function loadSearchResults(query) {
     throw err;
   }
 }
-
-export function getSearchResultsPage(page) {
+//gets left side playlists
+export function getSearchResultsPage(page = state.search.page) {
+  state.search.page = page;
   const start = (page - 1) * RES_PER_PAGE;
-  const end = page * 10;
+  const end = page * 15;
 
-  return state.search.results.slice(0, 9);
+  return state.search.results.slice(start, end);
+}
+
+export function getPlaylistTracksPage(page = state.playlist.page) {
+  state.playlist.page = page;
+  const start = (page - 1) * TRACKS_PER_PAGE;
+  const end = page * TRACKS_PER_PAGE;
+
+  state.playlist.trackPage = state.playlist.playlist.tracks.items.slice(
+    start,
+    end
+  );
+  return state.playlist;
 }
