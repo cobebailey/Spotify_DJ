@@ -8,6 +8,7 @@ import playlistView from './views/playlistView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 import PaginationView from './views/paginationView.js';
+import BindingsView from './views/bindingsView.js';
 import {
   requestAuthorization,
   getCode,
@@ -29,6 +30,7 @@ import 'regenerator-runtime/runtime';
 import { callApiAsync } from './helpers.js';
 import paginationView from './views/paginationView.js';
 import trackPaginationView from './views/trackPaginationView.js';
+import bindingsView from './views/bindingsView.js';
 
 /* if (module.hot) {
   module.hot.accept();
@@ -50,6 +52,7 @@ async function init() {
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   trackPaginationView.addHandlerClick(controlTrackPagination);
+  bindingsView.addHandlerClick(controlTabs);
   //sets the default playlist
   //this is causing aN ERROR WITH AUTH TOKENS
   //window.location.href =
@@ -128,8 +131,18 @@ async function controlSearchResults() {
   try {
     resultsView.renderSpinner();
     //
-    const query = searchView.getQuery();
-    if (!query) return;
+    let query = searchView.getQuery();
+    //if theres a query, store the value
+    if (query) {
+      model.state.search.query = query;
+    }
+    //if not, get the value from the model
+    if (!query) {
+      query = model.state.search.query;
+    }
+    //if the model is empty, just return
+    if (model.state.search.query === '') return;
+
     //make call for search results
     await model.loadSearchResults(query);
     //render them
@@ -148,6 +161,14 @@ async function controlPagination(goToPage) {
   paginationView.render(model.state.search);
 }
 
+async function controlTabs(id) {
+  if (id === 'searchTab') {
+    controlSearchResults();
+  }
+  if (id === 'bindingTab') {
+    bindingsView.render(model.state.bindings);
+  }
+}
 //controlPlaylists();
 //function for testing code
 async function testFunction() {

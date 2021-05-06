@@ -15,6 +15,18 @@ export const state = {
     page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
+  bindings: [
+    {
+      track: {
+        id: '68ngtC3pGiTjXcFwxYCJ7Z',
+        name: 'Diabolic',
+        owner: {
+          displayName: 'Jeff',
+        },
+      },
+      keyName: 'A',
+    },
+  ],
 };
 //
 export async function playTrack(trackId) {
@@ -146,4 +158,9 @@ export function getPlaylistTracksPage(page = state.playlist.page) {
     end
   );
   return state.playlist;
+}
+
+export function bindTrackToKey(track, key) {
+  state.bindings.a = track;
+  console.log(state.bindings.a);
 }
