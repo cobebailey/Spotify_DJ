@@ -3,7 +3,7 @@ import icons from 'url:../../img/icons.svg';
 class BindingsView extends View {
   _parentElement = document.querySelector('.tab');
   _searchElement = document.querySelector('.results');
-  _errorMessage = 'binding error';
+  _errorMessage = 'No key-bindings found....';
   _message = '';
 
   addHandlerClick(handler) {
@@ -33,20 +33,31 @@ class BindingsView extends View {
   //
 
   _generateMarkup() {
-    console.log(this._data, 'tabview');
-    return this._data.map(this._generateMarkupPreview).join('');
+    console.log(this._data, 'this.data');
+
+    let dataArray = this._data;
+
+    /* dataArray = dataArray.map(function (el, i) {
+      el.keyName = `${String.fromCharCode(65 + i)}`;
+      i++;
+      return el;
+    }); */
+
+    let dataHTML = dataArray.map(this._generateMarkupPreview).join('');
+    return dataHTML;
   }
 
-  _generateMarkupPreview(result) {
+  _generateMarkupPreview(track) {
+    console.log(track, 'mrkpreview');
     return `
     <li class="preview">
-            <a class="preview__link" href="#p${result.track.id}">
+            <a class="preview__link" href="#p${track.id}">
               <figure class="preview__fig">
-                <img src="" alt="${result.keyName}" />
+                <img src="${track.album.images[0].url}" alt="${track.keyName[3]}" />
               </figure>
               <div class="preview__data">
-                <h4 class="preview__title">${result.keyName} : ${result.track.name}</h4>
-                <p class="preview__publisher">${result.track.owner.displayName}</p>
+                <h4 class="preview__title">${track.keyName[3]} : ${track.name}</h4>
+                <p class="preview__publisher">by: ${track.artists[0].name}</p>
                 
               </div>
             </a>

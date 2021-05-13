@@ -3,6 +3,7 @@ import View from './View.js';
 import icons from 'url:../../img/icons.svg';
 class PlaylistView extends View {
   _parentElement = document.querySelector('.recipe');
+  _bindBtnElement = document.querySelector('.bindbtn');
 
   _errorMessage = 'uh oh...';
 
@@ -15,10 +16,22 @@ class PlaylistView extends View {
       handlerFunction();
     });
   }
+
   addHandlerRender(handlerFunction) {
     ['hashchange', 'load'].forEach(event =>
       window.addEventListener(event, handlerFunction)
     );
+  }
+
+  addBindHandler(handlerFunction) {
+    this._bindBtnElement.addEventListener('click', event => {
+      const btn = e.target.closest('.bindbtn');
+      console.log(btn);
+      if (!btn) return;
+      const id = btn.id;
+      console.log(id);
+      handlerFunction(id);
+    });
   }
 
   //generates an html script using data form the model to display playlist
@@ -100,9 +113,18 @@ class PlaylistView extends View {
                 <svg>
                   <use href="src/img/icons.svg#icon-user"></use>
                 </svg>
+                
               </div>
+
+              
             </div>
           </a>
+          <a class="preview__bind" href="#b${track.track.id}">
+            <button class="bindbtn" id="${track.track.id}" >B</button>
+          </a>
+          
+
+          
         </li>
           
           

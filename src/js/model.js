@@ -15,19 +15,62 @@ export const state = {
     page: 1,
     resultsPerPage: RES_PER_PAGE,
   },
-  bindings: [
-    {
-      track: {
-        id: '68ngtC3pGiTjXcFwxYCJ7Z',
-        name: 'Diabolic',
-        owner: {
-          displayName: 'Jeff',
-        },
-      },
-      keyName: 'A',
-    },
-  ],
+  bindings: [],
 };
+//
+export function search(nameKey, myArray) {
+  for (var i = 0; i < myArray.length; i++) {
+    if (myArray[i].keyName === nameKey) {
+      return myArray[i];
+    }
+  }
+}
+//
+export function compareValues(key, order = 'asc') {
+  return function innerSort(a, b) {
+    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+      // property doesn't exist on either object
+      return 0;
+    }
+
+    const varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
+    const varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
+
+    let comparison = 0;
+    if (varA > varB) {
+      comparison = 1;
+    } else if (varA < varB) {
+      comparison = -1;
+    }
+    return order === 'desc' ? comparison * -1 : comparison;
+  };
+}
+/* async function tempLoadBindings() {
+  let tracks = [
+    '7Gjam2xvI8zOIKUf7blzi0',
+    '6DONTnamNDOJdO6DzCu71p',
+    '2twXp9X5I5WLE28rNWq3lf',
+    '0axsMumJxKRTuYCMb9oeWl',
+  ];
+  let tracksData = await getTracks(tracks);
+  console.log(tracksData, 'tracksData');
+
+  state.bindings = tracksData.tracks;
+  console.log(state.bindings);
+}
+tempLoadBindings(); */
+//
+export async function getTracks(trackIds) {
+  let tracksString = trackIds.join(',');
+  //tracksString = encodeURIComponent(tracksString);
+  console.log(tracksString);
+  const res = await callApiAsync(
+    `https://api.spotify.com/v1/tracks?ids=${tracksString}`
+  );
+  const data = await res.json();
+  console.log(data, 'getTracks');
+  return data;
+}
 //
 export async function playTrack(trackId) {
   //const contextUri = trackData.album.id;
@@ -47,7 +90,10 @@ export async function getTrackInfo(trackId) {
   );
   const data = await res.json();
   console.log(data, 'trackdata');
+  return data;
 }
+//encodeURIComponent(redirect_uri)
+
 ///
 export async function playTracksGetInfo(trackId) {
   getTrackInfo(trackId);

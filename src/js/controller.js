@@ -50,9 +50,12 @@ async function init() {
   playlistView.addHandlerRender(controlPlaylists);
 
   searchView.addHandlerSearch(controlSearchResults);
+  searchView.addHandlerPlayerizer(controlPlayerizer);
+  searchView.addHandlerDeactivate(deactivatePlayerizer);
   paginationView.addHandlerClick(controlPagination);
   trackPaginationView.addHandlerClick(controlTrackPagination);
   bindingsView.addHandlerClick(controlTabs);
+
   //sets the default playlist
   //this is causing aN ERROR WITH AUTH TOKENS
   //window.location.href =
@@ -89,7 +92,24 @@ const onPageLoad = function () {
 //sets up sdk
 
 //
-
+async function controlPlayerizer() {
+  console.log('playerizer operational: listening....');
+  window.addEventListener('keydown', async function (e) {
+    console.log(e.code);
+    let targetTrack = model.search(e.code, model.state.bindings);
+    console.log(targetTrack);
+    model.playTrack(targetTrack.id);
+  });
+}
+function deactivatePlayerizer() {
+  console.log('deactivated');
+}
+async function bindButtonEventListener(id) {
+  document.addEventListener('keylistsdown', function (e) {
+    var key = e.key;
+    console.log(key);
+  });
+}
 //ASYNC FUNCTIONS
 async function controlPlaylists() {
   try {
@@ -97,6 +117,7 @@ async function controlPlaylists() {
     if (!itemID) return;
     //
     let playlistID;
+    let trackID;
     //if p, render playlist, if t, play track
     //
     //all playlist item hrefs start with p
@@ -107,6 +128,7 @@ async function controlPlaylists() {
       //playlistView.render(model.state.playlist);
       playlistView.render(model.getPlaylistTracksPage());
       trackPaginationView.render(model.state.playlist);
+      //playlistView.addBindHandler(bindButtonEventListener);
     }
 
     //all track items hrefs start wth t
@@ -114,6 +136,27 @@ async function controlPlaylists() {
       playlistID = itemID.slice(1);
       //makes api call using playlist ID to play the clicked track
       model.playTrack(playlistID);
+    }
+    //on bind button press, bind a key to the id of the track pressed
+    if (itemID[0] === 'b') {
+      let keyVaL;
+      trackID = itemID.slice(1);
+
+      console.log('listening for key press...');
+      window.addEventListener(
+        'keydown',
+        async function (e) {
+          console.log(e.code);
+          let thisTrack = await model.getTrackInfo(trackID);
+          thisTrack.keyName = e.code;
+          console.log(thisTrack);
+          model.state.bindings.push(thisTrack);
+          model.state.bindings.sort(model.compareValues('keyName'));
+          console.log(model.state.bindings);
+        },
+        { once: true }
+      );
+      //set binding
     }
 
     //render the playlist
