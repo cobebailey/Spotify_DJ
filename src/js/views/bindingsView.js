@@ -8,11 +8,17 @@ class BindingsView extends View {
 
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
+      const searchTab = document.getElementById('searchTab');
+      const bindingTab = document.getElementById('bindingTab');
+      searchTab.classList.remove('active');
+      bindingTab.classList.remove('active');
+
       const btn = e.target.closest('.tablinks');
-      console.log(btn);
+      btn.classList.add('active');
+
       if (!btn) return;
       const id = btn.id;
-      console.log(id);
+
       handler(id);
     });
   }
@@ -33,8 +39,6 @@ class BindingsView extends View {
   //
 
   _generateMarkup() {
-    console.log(this._data, 'this.data');
-
     let dataArray = this._data;
 
     /* dataArray = dataArray.map(function (el, i) {
@@ -48,10 +52,9 @@ class BindingsView extends View {
   }
 
   _generateMarkupPreview(track) {
-    console.log(track, 'mrkpreview');
     return `
     <li class="preview">
-            <a class="preview__link" href="#p${track.id}">
+            <a class="preview__link" href="#t${track.id}">
               <figure class="preview__fig">
                 <img src="${track.album.images[0].url}" alt="${track.keyName[3]}" />
               </figure>

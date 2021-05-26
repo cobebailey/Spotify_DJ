@@ -2,7 +2,7 @@ import View from './View.js';
 
 import icons from 'url:../../img/icons.svg';
 class PlaylistView extends View {
-  _parentElement = document.querySelector('.recipe');
+  _parentElement = document.querySelector('.playlist');
   _bindBtnElement = document.querySelector('.bindbtn');
 
   _errorMessage = 'uh oh...';
@@ -38,34 +38,34 @@ class PlaylistView extends View {
   _generateMarkup() {
     console.log(this._data);
     return ` 
-    <figure class="recipe__fig">
+    <figure class="playlist__fig">
       <img src="${this._data.playlist.image.url}" alt="${
       this._data.name
-    }" class="recipe__img" />
-      <h1 class="recipe__title">
+    }" class="playlist__img" />
+      <h1 class="playlist__title">
         <span>${this._data.playlist.name}</span>
       </h1>
     </figure>
 
-    <div class="recipe__details">
-      <div class="recipe__info">
-        <svg class="recipe__info-icon">
+    <div class="playlist__details">
+      <div class="playlist__info">
+        <svg class="playlist__info-icon">
           <use href=${icons}#icon-clock"></use>
         </svg>
-        <span class="recipe__info-data recipe__info-data--minutes">${
+        <span class="playlist__info-data playlist__info-data--minutes">${
           this._data.playlist.description
         }</span>
-        <span class="recipe__info-text"></span>
+        <span class="playlist__info-text"></span>
       </div>
       <!--
-      <div class="recipe__info">
-        <svg class="recipe__info-icon">
+      <div class="playlist__info">
+        <svg class="playlist__info-icon">
           <use href=${icons}#icon-users"></use>
         </svg>
-        <span class="recipe__info-data recipe__info-data--people">-</span>
-        <span class="recipe__info-text">ph</span>
+        <span class="playlist__info-data playlist__info-data--people">-</span>
+        <span class="playlist__info-text">ph</span>
 
-        <div class="recipe__info-buttons">
+        <div class="playlist__info-buttons">
           <button class="btn--tiny btn--increase-servings">
             <svg>
               <use href=${icons}#icon-minus-circle"></use>
@@ -80,7 +80,7 @@ class PlaylistView extends View {
       </div>
       -->
       <!-- shadow?
-      <div class="recipe__user-generated">
+      <div class="playlist__user-generated">
         <svg>
           <use href=${icons}#icon-user"></use>
         </svg>
@@ -95,20 +95,28 @@ class PlaylistView extends View {
       -->
     </div>
 
-    <div class="recipe__ingredients">
+    <div class="playlist__ingredients">
       <h2 class="heading--2">Tracks</h2>
-      <ul class="recipe__ingredient-list">
+      <ul class="playlist__ingredient-list">
       <!-- iterates over a playlist to display tracks -->
       ${this._data.trackPage
         .map(track => {
           return `<li class="preview">
-          <a class="preview__link preview__link--active" href="#t${track.track.id}">
+          <a class="preview__link preview__link--active" href="#t${
+            track.track === null ? 'error' : track.track.id
+          }">
             <figure class="preview__fig">
-              <img src="${track.track.album.images[0].url}" alt="Test" />
+              <img src="${
+                track.track === null ? 'error' : track.track.album.images[0].url
+              }" alt="Not Found" />
             </figure>
             <div class="preview__data">
-              <h4 class="preview__title">${track.track.name}</h4>
-              <p class="preview__publisher">${track.track.artists[0].name}</p>
+              <h4 class="preview__title">${
+                track.track === null ? 'error' : track.track.name
+              }</h4>
+              <p class="preview__publisher">${
+                track.track === null ? 'error' : track.track.artists[0].name
+              }</p>
               <div class="preview__user-generated">
                 <svg>
                   <use href="src/img/icons.svg#icon-user"></use>
@@ -119,8 +127,12 @@ class PlaylistView extends View {
               
             </div>
           </a>
-          <a class="preview__bind" href="#b${track.track.id}">
-            <button class="bindbtn" id="${track.track.id}" >B</button>
+          <a class="preview__bind" href="#b${
+            track.track === null ? 'error' : track.track.id
+          }">
+            <button class="btn--tinyhover bindbtn" id="${
+              track.track === null ? 'error' : track.track.id
+            }" >BIND</button>
           </a>
           
 
@@ -138,16 +150,16 @@ class PlaylistView extends View {
       
         
     <!--
-    <div class="recipe__directions">
+    <div class="playlist__directions">
       <h2 class="heading--2">ph</h2>
-      <p class="recipe__directions-text">
+      <p class="playlist__directions-text">
         Playlist by:
-        <span class="recipe__publisher">${
+        <span class="playlist__publisher">${
           this._data.playlist.owner.displayName
         }</span>. PH
       </p>
       <a
-        class="btn--small recipe__btn"
+        class="btn--small playlist__btn"
         href="${this._data.playlist.href}"
         target="_blank"
       >
@@ -165,13 +177,13 @@ class PlaylistView extends View {
 export default new PlaylistView();
 
 {
-  /* <li class="recipe__ingredient">
-        <svg class="recipe__icon">
+  /* <li class="playlist__ingredient">
+        <svg class="playlist__icon">
           <use href=${icons}#icon-check"></use>
         </svg>
-        <div class="recipe__quantity">${track.track.name} - </div>
-        <div class="recipe__description">
-          <span class="recipe__unit">${track.track.artists[0].name}</span>
+        <div class="playlist__quantity">${track.track.name} - </div>
+        <div class="playlist__description">
+          <span class="playlist__unit">${track.track.artists[0].name}</span>
           PH
         </div>
       </li> */

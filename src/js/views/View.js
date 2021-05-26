@@ -17,6 +17,33 @@ export default class View {
   _clear() {
     this._parentElement.innerHTML = '';
   }
+  //
+  //
+  update(data) {
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    //creates a virtual dom for comparing old dom to new dom
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    //arrays for comapring
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this._parentElement.querySelectorAll('*'));
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
+  //
   //renders a loading spinner
   renderSpinner() {
     const markup = `
@@ -39,6 +66,16 @@ export default class View {
               <p>${message}</p>
             </div>
             `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+  renderDefault(message = this._defaultMessage) {
+    const markup = `
+    <div class="default">
+              
+              <p>${message}</p>
+            </div>
+    `;
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }

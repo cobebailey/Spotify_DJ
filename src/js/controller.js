@@ -7,27 +7,12 @@ import * as model from './model.js';
 import playlistView from './views/playlistView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
-import PaginationView from './views/paginationView.js';
-import BindingsView from './views/bindingsView.js';
-import {
-  requestAuthorization,
-  getCode,
-  handleRedirect,
-  fetchAccessToken,
-  callAuthorizationApi,
-  handleAuthorizationResponse,
-} from './auth.js';
-import {
-  AUTH_ENDPOINT,
-  sdkToken,
-  client_id,
-  client_secret,
-  redirect_uri,
-  token,
-} from './config';
+
+import { requestAuthorization, handleRedirect } from './auth.js';
+import { client_id, client_secret } from './config';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { callApiAsync } from './helpers.js';
+
 import paginationView from './views/paginationView.js';
 import trackPaginationView from './views/trackPaginationView.js';
 import bindingsView from './views/bindingsView.js';
@@ -37,24 +22,22 @@ import bindingsView from './views/bindingsView.js';
 } */
 //
 const authBtn = document.querySelector('.nav__btn--authBtn');
-const request = require('request'); // "Request" library
-//
-let access_token;
-let refresh_token;
-//
-const boogalooID = '70KUhT93Yo584eruWeHXX8?si=82c9ffcca2d6411b';
-const synthWaveID = '7Al4qMA6wk3G6AcFT1QsvK?si=dc2e6202292e4a4c';
-//
 //
 async function init() {
   playlistView.addHandlerRender(controlPlaylists);
 
   searchView.addHandlerSearch(controlSearchResults);
-  searchView.addHandlerPlayerizer(controlPlayerizer);
-  searchView.addHandlerDeactivate(deactivatePlayerizer);
+  searchView.addHandlerActivate(controlPlayerizer);
+  searchView.addHandlerDeactivate(controlPlayerizer);
   paginationView.addHandlerClick(controlPagination);
   trackPaginationView.addHandlerClick(controlTrackPagination);
   bindingsView.addHandlerClick(controlTabs);
+
+  //for binding storage and retirevela
+  if (!localStorage.getItem('bindings') === true) return;
+
+  model.state.bindings = JSON.parse(localStorage.getItem('bindings'));
+  console.log(model.state.bindings, 'bindings');
 
   //sets the default playlist
   //this is causing aN ERROR WITH AUTH TOKENS
@@ -92,24 +75,15 @@ const onPageLoad = function () {
 //sets up sdk
 
 //
-async function controlPlayerizer() {
-  console.log('playerizer operational: listening....');
-  window.addEventListener('keydown', async function (e) {
-    console.log(e.code);
-    let targetTrack = model.search(e.code, model.state.bindings);
-    console.log(targetTrack);
-    model.playTrack(targetTrack.id);
-  });
+async function controlPlayerizer(btnClass) {
+  if (btnClass === '.actbtn') {
+    window.addEventListener('keydown', model.playerize);
+  }
+  if (btnClass === '.deactbtn') {
+    window.removeEventListener('keydown', model.playerize);
+  }
 }
-function deactivatePlayerizer() {
-  console.log('deactivated');
-}
-async function bindButtonEventListener(id) {
-  document.addEventListener('keylistsdown', function (e) {
-    var key = e.key;
-    console.log(key);
-  });
-}
+
 //ASYNC FUNCTIONS
 async function controlPlaylists() {
   try {
@@ -117,7 +91,7 @@ async function controlPlaylists() {
     if (!itemID) return;
     //
     let playlistID;
-    let trackID;
+
     //if p, render playlist, if t, play track
     //
     //all playlist item hrefs start with p
@@ -139,23 +113,8 @@ async function controlPlaylists() {
     }
     //on bind button press, bind a key to the id of the track pressed
     if (itemID[0] === 'b') {
-      let keyVaL;
-      trackID = itemID.slice(1);
-
-      console.log('listening for key press...');
-      window.addEventListener(
-        'keydown',
-        async function (e) {
-          console.log(e.code);
-          let thisTrack = await model.getTrackInfo(trackID);
-          thisTrack.keyName = e.code;
-          console.log(thisTrack);
-          model.state.bindings.push(thisTrack);
-          model.state.bindings.sort(model.compareValues('keyName'));
-          console.log(model.state.bindings);
-        },
-        { once: true }
-      );
+      window.addEventListener('keydown', model.bindTrack, { once: true });
+      console.log('Binding: listening for key press...');
       //set binding
     }
 
@@ -184,7 +143,10 @@ async function controlSearchResults() {
       query = model.state.search.query;
     }
     //if the model is empty, just return
-    if (model.state.search.query === '') return;
+    if (model.state.search.query === '') {
+      resultsView.renderDefault();
+      return;
+    }
 
     //make call for search results
     await model.loadSearchResults(query);

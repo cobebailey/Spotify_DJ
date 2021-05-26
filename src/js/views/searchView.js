@@ -17,14 +17,16 @@ class SearchView {
       handler();
     });
   }
-  addHandlerPlayerizer(handler) {
+  addHandlerActivate(handler) {
     this._actBtn.addEventListener('click', function (e) {
-      handler();
+      handler('.actbtn');
+      console.log('Playerizer activated...');
     });
   }
   addHandlerDeactivate(handler) {
-    this._deactBtn.removeEventListener('click', function (e) {
-      handler();
+    this._deactBtn.addEventListener('click', function (e) {
+      handler('.deactbtn');
+      console.log('Playerizer deactivated...');
     });
   }
 }

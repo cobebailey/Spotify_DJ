@@ -18,33 +18,7 @@ export const state = {
   bindings: [],
 };
 //
-export function search(nameKey, myArray) {
-  for (var i = 0; i < myArray.length; i++) {
-    if (myArray[i].keyName === nameKey) {
-      return myArray[i];
-    }
-  }
-}
-//
-export function compareValues(key, order = 'asc') {
-  return function innerSort(a, b) {
-    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-      // property doesn't exist on either object
-      return 0;
-    }
 
-    const varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
-    const varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
-
-    let comparison = 0;
-    if (varA > varB) {
-      comparison = 1;
-    } else if (varA < varB) {
-      comparison = -1;
-    }
-    return order === 'desc' ? comparison * -1 : comparison;
-  };
-}
 /* async function tempLoadBindings() {
   let tracks = [
     '7Gjam2xvI8zOIKUf7blzi0',
@@ -63,12 +37,12 @@ tempLoadBindings(); */
 export async function getTracks(trackIds) {
   let tracksString = trackIds.join(',');
   //tracksString = encodeURIComponent(tracksString);
-  console.log(tracksString);
+
   const res = await callApiAsync(
     `https://api.spotify.com/v1/tracks?ids=${tracksString}`
   );
   const data = await res.json();
-  console.log(data, 'getTracks');
+
   return data;
 }
 //
@@ -89,7 +63,7 @@ export async function getTrackInfo(trackId) {
     `https://api.spotify.com/v1/tracks/${trackId}`
   );
   const data = await res.json();
-  console.log(data, 'trackdata');
+
   return data;
 }
 //encodeURIComponent(redirect_uri)
@@ -117,7 +91,6 @@ export async function loadPlaylist(playlistID) {
     const res = await getPlaylistById(playlistID);
 
     const playlist = await res.json();
-    console.log(playlist, 'this is the playlist');
 
     if (!res.ok) throw new Error(`${playlist.message}: ${res.status}`);
 
@@ -205,8 +178,67 @@ export function getPlaylistTracksPage(page = state.playlist.page) {
   );
   return state.playlist;
 }
+function search(nameKey, myArray) {
+  for (var i = 0; i < myArray.length; i++) {
+    if (myArray[i].keyName === nameKey) {
+      return myArray[i];
+    }
+  }
+}
+function deleteBinding(nameKey, myArray) {
+  for (var i = 0; i < myArray.length; i++) {
+    if (myArray[i].keyName === nameKey) {
+      myArray.splice(i, 1);
+      return;
+    }
+  }
+}
+//
+function compareValues(key, order = 'asc') {
+  return function innerSort(a, b) {
+    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+      // property doesn't exist on either object
+      return 0;
+    }
 
-export function bindTrackToKey(track, key) {
-  state.bindings.a = track;
-  console.log(state.bindings.a);
+    const varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
+    const varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
+
+    let comparison = 0;
+    if (varA > varB) {
+      comparison = 1;
+    } else if (varA < varB) {
+      comparison = -1;
+    }
+    return order === 'desc' ? comparison * -1 : comparison;
+  };
+}
+function checkBindings(keyName, array) {
+  let targetBinding = search(e.code, state.bindings);
+  if (targetBinding) {
+    deleteBinding(e.code, state.bindings);
+  }
+}
+export async function bindTrack(e) {
+  //check for an existing binding with a matching keyname
+  let targetBinding = search(e.code, state.bindings);
+  if (targetBinding) {
+    deleteBinding(e.code, state.bindings);
+  }
+  const trackID = window.location.hash.slice(2);
+  let thisTrack = await getTrackInfo(trackID);
+  thisTrack.keyName = e.code;
+
+  state.bindings.push(thisTrack);
+  state.bindings.sort(compareValues('keyName'));
+  localStorage.setItem('bindings', JSON.stringify(state.bindings));
+  console.log(`Bound ${thisTrack.name} to ${thisTrack.keyName}`);
+}
+
+export async function playerize(e) {
+  console.log(e.code);
+  let targetTrack = search(e.code, state.bindings);
+  console.log('Target track:', targetTrack);
+  playTrack(targetTrack.id);
+  console.log('playerizer operational: listening....');
 }

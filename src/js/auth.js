@@ -20,16 +20,17 @@ export async function requestAuthorization() {
 const getCode = function () {
   let code = null;
   const queryString = window.location.search;
-  console.log(queryString);
+
   if (queryString.length > 0) {
     const urlParams = new URLSearchParams(queryString);
     code = urlParams.get('code');
   }
+  if (code) console.log('Tokens acquired');
   return code;
 };
 export const handleRedirect = function () {
   let code = getCode();
-  console.log(code);
+  //console.log(code);
   fetchAccessToken(code);
   window.history.pushState('', '', redirect_uri); // remove param from url
 };
