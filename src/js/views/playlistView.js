@@ -89,9 +89,9 @@ class PlaylistView extends View {
       -->
     </div>
 
-    <div class="playlist__ingredients">
+    <div class="playlist__track">
       <h2 class="heading--2">Tracks</h2>
-      <ul class="playlist__ingredient-list">
+      <ul class="playlist__track-list">
       <!-- iterates over a playlist to display tracks -->
       ${this._data.trackPage
         .map(track => {

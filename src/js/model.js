@@ -245,7 +245,10 @@ export async function bindTrack(e) {
 
 export async function playerize(e) {
   console.log(e.code);
+  if (e.code === 'Escape') return;
+
   let targetTrack = await search(e.code, state.bindings);
+  if (!targetTrack) return;
   console.log('Target track:', targetTrack);
   //playTrack(targetTrack.id);
   await addTrackToQueue(targetTrack.id);

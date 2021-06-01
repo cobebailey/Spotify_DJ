@@ -29,6 +29,7 @@ class SearchView {
       handler();
     });
   }
+
   addHandlerActivate(handler) {
     this._actBtn.addEventListener('click', function (e) {
       handler('.actbtn');
