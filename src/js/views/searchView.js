@@ -35,7 +35,6 @@ class SearchView {
       handler('.actbtn');
       console.log('Playerizer activated...');
     });
-    this._actBtn.addEventListener('click', this._toggleOverlay.bind(this));
   }
   addHandlerDeactivate(handler) {
     this._deactBtn.addEventListener('click', function (e) {
