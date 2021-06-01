@@ -57,6 +57,14 @@ export async function playTrack(trackId) {
     })
   );
 }
+async function addTrackToQueue(trackId) {
+  const queueEndpoint = `https://api.spotify.com/v1/me/player/queue?uri=spotify:track:${trackId}`;
+  const res = await callApiAsync(queueEndpoint, 'POST');
+}
+async function nextTrack() {
+  const nextTrackEndpoint = 'https://api.spotify.com/v1/me/player/next';
+  callApiAsync(nextTrackEndpoint, 'POST');
+}
 //
 export async function getTrackInfo(trackId) {
   const res = await callApiAsync(
@@ -69,10 +77,10 @@ export async function getTrackInfo(trackId) {
 //encodeURIComponent(redirect_uri)
 
 ///
-export async function playTracksGetInfo(trackId) {
+/* export async function playTracksGetInfo(trackId) {
   getTrackInfo(trackId);
   playTrack(trackId);
-}
+} */
 //gets current users playlist
 async function getUserPlaylistsAsync() {
   return callApiAsync('https://api.spotify.com/v1/me/playlists', 'GET');
@@ -237,8 +245,10 @@ export async function bindTrack(e) {
 
 export async function playerize(e) {
   console.log(e.code);
-  let targetTrack = search(e.code, state.bindings);
+  let targetTrack = await search(e.code, state.bindings);
   console.log('Target track:', targetTrack);
-  playTrack(targetTrack.id);
+  //playTrack(targetTrack.id);
+  await addTrackToQueue(targetTrack.id);
+  nextTrack();
   console.log('playerizer operational: listening....');
 }

@@ -79,13 +79,7 @@ class PlaylistView extends View {
         </div>
       </div>
       -->
-      <!-- shadow?
-      <div class="playlist__user-generated">
-        <svg>
-          <use href=${icons}#icon-user"></use>
-        </svg>
-      </div>
-      -->
+      
       <!-- little buitton by desc
       <button class="btn--round">
         <svg class="">
@@ -103,7 +97,7 @@ class PlaylistView extends View {
         .map(track => {
           return `<li class="preview">
           <a class="preview__link preview__link--active" href="#t${
-            track.track === null ? 'error' : track.track.id
+            track.track === null ? 'error fetching...' : track.track.id
           }">
             <figure class="preview__fig">
               <img src="${
@@ -112,17 +106,12 @@ class PlaylistView extends View {
             </figure>
             <div class="preview__data">
               <h4 class="preview__title">${
-                track.track === null ? 'error' : track.track.name
+                track.track === null ? 'error fetching...' : track.track.name
               }</h4>
               <p class="preview__publisher">${
                 track.track === null ? 'error' : track.track.artists[0].name
               }</p>
-              <div class="preview__user-generated">
-                <svg>
-                  <use href="src/img/icons.svg#icon-user"></use>
-                </svg>
-                
-              </div>
+              
 
               
             </div>
@@ -149,42 +138,9 @@ class PlaylistView extends View {
 
       
         
-    <!--
-    <div class="playlist__directions">
-      <h2 class="heading--2">ph</h2>
-      <p class="playlist__directions-text">
-        Playlist by:
-        <span class="playlist__publisher">${
-          this._data.playlist.owner.displayName
-        }</span>. PH
-      </p>
-      <a
-        class="btn--small playlist__btn"
-        href="${this._data.playlist.href}"
-        target="_blank"
-      >
-        <span>Directions</span>
-        <svg class="search__icon">
-          <use href=${icons}#icon-arrow-right"></use>
-        </svg>
-      </a>
-    </div>
-    -->
+   
 `;
   }
 }
 
 export default new PlaylistView();
-
-{
-  /* <li class="playlist__ingredient">
-        <svg class="playlist__icon">
-          <use href=${icons}#icon-check"></use>
-        </svg>
-        <div class="playlist__quantity">${track.track.name} - </div>
-        <div class="playlist__description">
-          <span class="playlist__unit">${track.track.artists[0].name}</span>
-          PH
-        </div>
-      </li> */
-}
