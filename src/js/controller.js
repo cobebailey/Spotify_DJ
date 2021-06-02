@@ -26,31 +26,31 @@ const authBtn = document.querySelector('.nav__btn--authBtn');
 async function init() {
   playlistView.addHandlerRender(controlPlaylists);
 
+  //
   searchView.addHandlerSearch(controlSearchResults);
   searchView.addHandlerActivate(controlPlayerizer);
   searchView.addHandlerDeactivate(controlPlayerizer);
+  //
   paginationView.addHandlerClick(controlPagination);
+  //
   trackPaginationView.addHandlerClick(controlTrackPagination);
+  //
   bindingsView.addHandlerClick(controlTabs);
+  //
+  authBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    requestAuthorization();
+  });
 
   //for binding storage and retirevela
   if (!localStorage.getItem('bindings') === true) return;
 
   model.state.bindings = JSON.parse(localStorage.getItem('bindings'));
-  console.log(model.state.bindings, 'bindings');
-
-  //sets the default playlist
-  //this is causing aN ERROR WITH AUTH TOKENS
-  //window.location.href =
-  //'http://localhost:1234/index.html#p7Al4qMA6wk3G6AcFT1QsvK';
 }
 init();
 
 //
-authBtn.addEventListener('click', function (e) {
-  e.preventDefault();
-  requestAuthorization();
-});
+
 //
 //handles page load
 window.addEventListener('load', e => {
@@ -67,13 +67,6 @@ const onPageLoad = function () {
     access_token = localStorage.getItem('access_token');
   }
 };
-//NEW ASYNC AUTH
-//gets code for echanging tokens
-
-//
-//
-//sets up sdk
-
 //
 async function controlPlayerizer(btnClass) {
   if (btnClass === '.actbtn') {
@@ -84,7 +77,6 @@ async function controlPlayerizer(btnClass) {
   }
 }
 
-//ASYNC FUNCTIONS
 async function controlPlaylists() {
   try {
     const itemID = window.location.hash.slice(1);
@@ -113,9 +105,10 @@ async function controlPlaylists() {
     }
     //on bind button press, bind a key to the id of the track pressed
     if (itemID[0] === 'b') {
-      window.addEventListener('keydown', model.bindTrack, { once: true });
-      console.log('Binding: listening for key press...');
       //set binding
+      window.addEventListener('keydown', model.bindTrack, { once: true });
+
+      console.log('Binding: listening for key press...');
     }
 
     //render the playlist
@@ -124,15 +117,9 @@ async function controlPlaylists() {
     playlistView.renderError(`${err} oh no!`);
   }
 }
-async function controlTrackPagination(goToPage) {
-  playlistView.render(model.getPlaylistTracksPage(goToPage));
-  trackPaginationView.render(model.state.playlist);
-}
-//
 async function controlSearchResults() {
   try {
     resultsView.renderSpinner();
-    //
     let query = searchView.getQuery();
     //if theres a query, store the value
     if (query) {
@@ -156,73 +143,38 @@ async function controlSearchResults() {
     paginationView.render(model.state.search);
   } catch (err) {
     console.log(err);
+    searchView.renderError(`${err} : Problem loading results...`);
   }
 }
-
+async function controlTrackPagination(goToPage) {
+  try {
+    playlistView.render(model.getPlaylistTracksPage(goToPage));
+    trackPaginationView.render(model.state.playlist);
+  } catch (err) {
+    console.error(err);
+    playlistView.renderError(`${err} Track pagination error...`);
+  }
+}
 async function controlPagination(goToPage) {
-  //rend new res
-  resultsView.render(model.getSearchResultsPage(goToPage));
-  //render new pag
-  paginationView.render(model.state.search);
+  try {
+    //rend new res
+    resultsView.render(model.getSearchResultsPage(goToPage));
+    //render new pag
+    paginationView.render(model.state.search);
+  } catch (err) {
+    console.error(err);
+    resultsView.renderError(`${err} : Playlist pagination error...`);
+  }
 }
-
 async function controlTabs(id) {
-  if (id === 'searchTab') {
-    controlSearchResults();
-  }
-  if (id === 'bindingTab') {
-    bindingsView.render(model.state.bindings);
+  try {
+    if (id === 'searchTab') {
+      controlSearchResults();
+    }
+    if (id === 'bindingTab') {
+      bindingsView.render(model.state.bindings);
+    }
+  } catch (err) {
+    console.error(err);
   }
 }
-//controlPlaylists();
-//function for testing code
-async function testFunction() {
-  //
-}
-//testFunction();
-
-//
-//
-//
-/* window.onSpotifyWebPlaybackSDKReady = () => {
-  const token = sdkToken;
-  const player = new Spotify.Player({
-    name: 'Spotify DJ',
-    getOAuthToken: cb => {
-      cb(token);
-    },
-  });
-
-  // Error handling
-  player.addListener('initialization_error', ({ message }) => {
-    console.error(message);
-  });
-  player.addListener('authentication_error', ({ message }) => {
-    console.error(message);
-  });
-  player.addListener('account_error', ({ message }) => {
-    console.error(message);
-  });
-  player.addListener('playback_error', ({ message }) => {
-    console.error(message);
-  });
-
-  // Playback status updates
-  player.addListener('player_state_changed', state => {
-    console.log(state);
-  });
-
-  // Ready
-  player.addListener('ready', ({ device_id }) => {
-    console.log('Ready with Device ID', device_id);
-    localStorage.setItem('deviceId', device_id);
-  });
-
-  // Not Ready
-  player.addListener('not_ready', ({ device_id }) => {
-    console.log('Device ID has gone offline', device_id);
-  });
-
-  // Connect to the player!
-  player.connect();
-}; */

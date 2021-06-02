@@ -3,8 +3,10 @@ class SearchView {
   _actBtn = document.querySelector('.actbtn');
   _deactBtn = document.querySelector('.deactbtn');
   _overlay = document.querySelector('.overlay');
+  _display = document.querySelector('.nav__btn--display');
 
   getQuery() {
+    //reads search query
     const query = this._parentEl.querySelector('.search__field').value;
     this._clearInput();
     return query;
@@ -12,35 +14,44 @@ class SearchView {
   _clearInput() {
     this._parentEl.querySelector('.search__field').value = '';
   }
-  _toggleOverlay() {
-    this._overlay.classList.toggle('hidden');
+  _toggleOn() {
+    this._display.innerHTML = '';
+    this._display.innerHTML = 'ON 🟢';
   }
-  addHandlerShowOverlay() {
-    this._actBtn.addEventListener('click', this._toggleOverlay.bind(this));
+  _toggleOff() {
+    this._display.innerHTML = '';
+    this._display.innerHTML = 'OFF 🔴';
   }
+
   addHandlerSearch(handler) {
     this._parentEl.addEventListener('submit', function (e) {
       e.preventDefault();
+      //adjusts active tab on Search
       const searchTab = document.getElementById('searchTab');
       const bindingTab = document.getElementById('bindingTab');
       searchTab.classList.remove('active');
       bindingTab.classList.remove('active');
       searchTab.classList.add('active');
+      //uses controller.addHandlerSearch
       handler();
     });
   }
 
   addHandlerActivate(handler) {
     this._actBtn.addEventListener('click', function (e) {
+      //uses controller.controlPlayerizer
       handler('.actbtn');
-      console.log('Playerizer activated...');
     });
+    //toggles ON display
+    this._actBtn.addEventListener('click', this._toggleOn.bind(this));
   }
   addHandlerDeactivate(handler) {
+    //uses controller.controlPlayerizer
     this._deactBtn.addEventListener('click', function (e) {
       handler('.deactbtn');
-      console.log('Playerizer deactivated...');
     });
+    //toggles OFF display
+    this._deactBtn.addEventListener('click', this._toggleOff.bind(this));
   }
 }
 export default new SearchView();

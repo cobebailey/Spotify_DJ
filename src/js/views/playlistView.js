@@ -4,18 +4,10 @@ import icons from 'url:../../img/icons.svg';
 class PlaylistView extends View {
   _parentElement = document.querySelector('.playlist');
   _bindBtnElement = document.querySelector('.bindbtn');
+  _display = document.querySelector('.nav__btn--display');
+  _bindingMessage = document.querySelector('.playlist__details');
 
   _errorMessage = 'uh oh...';
-
-  //used in init() to add event listeners for playlist loading
-
-  //used in init() to add event listeners to hashchanges for play tracks
-  addTrackPlayer(handlerFunction) {
-    window.addEventListener('hashchange', event => {
-      event.preventDefault();
-      handlerFunction();
-    });
-  }
 
   addHandlerRender(handlerFunction) {
     ['hashchange', 'load'].forEach(event =>
@@ -23,18 +15,7 @@ class PlaylistView extends View {
     );
   }
 
-  addBindHandler(handlerFunction) {
-    this._bindBtnElement.addEventListener('click', event => {
-      const btn = e.target.closest('.bindbtn');
-      console.log(btn);
-      if (!btn) return;
-      const id = btn.id;
-      console.log(id);
-      handlerFunction(id);
-    });
-  }
-
-  //generates an html script using data form the model to display playlist
+  //generates an html script using data from the model to display playlist
   _generateMarkup() {
     console.log(this._data);
     return ` 

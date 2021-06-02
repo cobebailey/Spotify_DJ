@@ -8,6 +8,7 @@ class BindingsView extends View {
 
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
+      //sets the active tab
       const searchTab = document.getElementById('searchTab');
       const bindingTab = document.getElementById('bindingTab');
       searchTab.classList.remove('active');
@@ -18,7 +19,7 @@ class BindingsView extends View {
 
       if (!btn) return;
       const id = btn.id;
-
+      //uses controller.controlTabs
       handler(id);
     });
   }
@@ -54,12 +55,6 @@ class BindingsView extends View {
 
   _generateMarkup() {
     let dataArray = this._data;
-
-    /* dataArray = dataArray.map(function (el, i) {
-      el.keyName = `${String.fromCharCode(65 + i)}`;
-      i++;
-      return el;
-    }); */
 
     let dataHTML = dataArray.map(this._generateMarkupPreview).join('');
     return dataHTML;

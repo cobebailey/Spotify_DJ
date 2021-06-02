@@ -4,10 +4,12 @@ class TrackPaginationView extends View {
   _parentElement = document.querySelector('.track-pagination');
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
+      //read which button was clicked and get data from it
       const btn = e.target.closest('.btn--inline');
       if (!btn) return;
       const goToPage = +btn.dataset.goto;
 
+      //uses controller.controlTrackPagination
       handler(goToPage);
     });
   }

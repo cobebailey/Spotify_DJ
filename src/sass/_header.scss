@@ -101,6 +101,12 @@
     &:hover {
       background-color: $color-grey-light-2;
     }
+    &active {
+      color: green;
+    }
+    &inactive {
+      color: red;
+    }
   }
 }
 
