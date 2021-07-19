@@ -17,7 +17,7 @@ class PlaylistView extends View {
 
   //generates an html script using data from the model to display playlist
   _generateMarkup() {
-    console.log(this._data);
+    
     return ` 
     <figure class="playlist__fig">
       <img src="${this._data.playlist.image.url}" alt="${

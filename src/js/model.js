@@ -217,9 +217,9 @@ export async function playerize(e) {
 
   let targetTrack = await search(e.code, state.bindings);
   if (!targetTrack) return;
-  console.log('Target track:', targetTrack);
+  //console.log('Target track:', targetTrack);
   //playTrack(targetTrack.id);
   await addTrackToQueue(targetTrack.id);
   nextTrack();
-  console.log('playerizer operational: listening....');
+  console.log('Playerizer operational: listening....');
 }
